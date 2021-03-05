@@ -21,9 +21,10 @@ jobs:
           mkdir -p build && cd build
           cmake ..
           make
-      - name: Prepare Deploy
+      - name: Prepare Deployment
         if: github.ref == 'refs/heads/master'
         run: |
+          apt-get update && apt-get install -y rsync
           mkdir -p export
           echo "# This branch is for deployment only" >> export/README.md
           cp build/*.pdf export
