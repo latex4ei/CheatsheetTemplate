@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: makeappdev/uselatex:latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: |
+          cmake --version; pdflatex --version
+          mkdir -p build && cd build
+          cmake ..
+          make
+      - name: Prepare Deploy
+        if: github.ref == 'refs/heads/master'
+        run: |
+          mkdir -p export
+          echo "# This branch is for deployment only" >> export/README.md
+          cp build/*.pdf export
+          cp build/git.id export
+      - name: Deploy
+        if: github.ref == 'refs/heads/master'
+        uses: JamesIves/github-pages-deploy-action@4.1.0
+        with:
+          branch: gh-pages
+          folder: export
