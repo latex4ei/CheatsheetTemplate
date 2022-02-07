@@ -10,7 +10,7 @@ add_custom_target(
 )
 
 add_latex_document(
-    Convex.tex
+    CheatsheetTemplate.tex
     FORCE_PDF
     IMAGE_DIRS img
     DEPENDS writegitid
