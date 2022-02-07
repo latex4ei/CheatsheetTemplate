@@ -1,11 +1,8 @@
-# LaTeX4EI Cheatsheet Template
+# Convex Optimization
 
-[![Actions Status](https://github.com/latex4ei/CheatsheetTemplate/workflows/CI/badge.svg)](https://github.com/latex4ei/CheatsheetTemplate)
-[![Join the chat at https://gitter.im/LaTeX4Ei/Lobby](https://badges.gitter.im/LaTeX4Ei/Lobby.svg)](https://gitter.im/LaTeX4Ei/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+Convex Optimization Cheatsheet
 
-Write beautiful latex cheat sheets with minimal effort.
-
-## Formelsammlung für Latex4ei
+## Cheatsheet for Convex Optimization
 
 **Required custom Package on GitHub:** [LaTeX4Ei](https://github.com/latex4ei/latex4ei-packages)
 

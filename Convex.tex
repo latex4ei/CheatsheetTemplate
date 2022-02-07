@@ -1,0 +1,428 @@
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% LaTeX4EI Template for Cheat Sheets                                Version 1.1
+%
+% Authors: Markus Hofbauer
+% Contact: info@latex4ei.de
+% Encode: UTF-8
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+
+% ======================================================================
+% Document Settings
+% ======================================================================
+
+% possible options: color/nocolor, english/german, threecolumn
+% defaults: color, english
+\documentclass[english]{latex4ei_sheet}
+
+% set document information
+\title{Convex Optimization}
+\author{Markus Kaschke}                    % optional, delete if unchanged
+\myemail{info@latex4ei.de}           % optional, delete if unchanged
+\mywebsite{www.latex4ei.de}          % optional, delete if unchanged
+
+\let\T\relax
+\DeclareMathOperator{\T}{\textsf{\textit{T}}}		% Zufallsvariable X
+\DeclareMathOperator{\Bias}{Bias}		% Zufallsvariable X
+\DeclareMathOperator{\argmax}{argmax}
+
+\DeclareMathOperator{\rang}{rang}
+% ======================================================================
+% Begin
+% ======================================================================
+\begin{document}
+
+\IfFileExists{git.id}{\input{git.id}}{}
+\ifdefined\GitRevision\mydate{\GitNiceDate\ (git \GitRevision)}\fi
+
+% Title
+% ----------------------------------------------------------------------
+\maketitle   % requires ./img/Logo.pdf
+
+
+% Section
+% ----------------------------------------------------------------------\section{Math}
+\section{Math}
+\begin{sectionbox}
+	\begin{tabular}{@{}llll}
+		$\pi \approx \num{3,14159}$ & $e \approx \num{2,71828}$ & $\sqrt{2} \approx \num{1,414}$ & $\sqrt{3} \approx \num{1,732}$ \\
+	\end{tabular}
+	
+	\textbf{Binome, Trinome}\\
+	$(a\pm b)^2 = a^2 \pm 2ab + b^2$ \hfill $a^2 - b^2 = (a-b)(a+b)$\\
+	$(a \pm b)^3 = a^3 \pm 3a^2b + 3ab^2 \pm b^3$\\
+	$(a+b+c)^2 = a^2 + b^2 + c^2 + 2ab + 2ac + 2bc$
+	\\[0.5em]
+	\textbf{Folgen und Reihen}\\
+	$\underset{\text{Aritmetrische Summenformel}}{\sum \limits_{k=1}^{n} k = \frac{n (n+1)}{2}}$ \quad $\underset{\text{Geometrische Summenformel}}{\sum \limits_{k=0}^{n} q^k = \frac{1 - q^{n+1}}{1-q}}$ \quad $\underset{\text{Exponentialreihe}}{\sum\limits_{n = 0}^{\infty} \frac{\cx z^n}{n!} = e^{\cx z}}$\\
+	\\[0.5em]
+	\textbf{Mittelwerte} \quad ($\sum$ von $i$ bis $N$) \hfill {\small (Median: Mitte einer geordneten Liste)}\\
+	\begin{tabular*}{\columnwidth}{@{\extracolsep\fill}l@{\quad\ $\ge$}l@{\quad\ $\ge$}l}
+		$\underset{\text{Arithmetisches}}{\ol x_{\ir{ar}} = \frac{1}{N} \sum x_i}$ & $\underset{\text{Geometrisches Mittel}}{\ol x_{\ir{geo}} = \sqrt[N]{ \prod x_i }}$ & $\underset{\text{Harmonisches}}{\ol x_{\ir hm} = }\frac{N}{\sum \frac{1}{x_i}}$\\
+	\end{tabular*}
+	\\[0.5em]
+	\textbf{Ungleichungen:} \hfill Bernoulli-Ungleichung:  $(1+x)^n \ge 1+nx$\\
+	$\underset{\text{Dreiecksungleichung}}{\big|\! \abs{x}- \abs{y}\!\big| \le \abs{x \pm y} \le \abs{x} + \abs{y}}$ \hfill
+	$\underset{\text{Cauchy-Schwarz-Ungleichung}}{\left| \vec x^\top \bdot \vec y \right| \le \| \vec x\| \cdot \| \vec y\|}$
+	\\[0.5em]
+	\textbf{Mengen:} De Morgan: $\overline{A \capdot B} = \overline{A} \cupplus \overline{B}$ \hfill $\overline{A \cupplus B} = \overline{A} \capdot \overline{B}$
+\end{sectionbox}
+
+\begin{sectionbox}
+	\subsection[Exp. und Log.]{Exp. und Log.\ \ $e^x := \lim\limits_{n \rightarrow \infty} \left( 1 + \frac{x}{n} \right)^n \hfill e \approx 2,71828$}
+	\begin{tabular*}{\columnwidth}{@{\extracolsep\fill}lll@{}}
+		$a^x = e^{x \ln a}$ & $\log_a x = \frac{\ln x}{\ln a}$ & $\ln x \le x -1$\\
+		$\ln(x^{a}) = a \ln(x)$ & $\ln(\frac{x}{a}) = \ln x - \ln a$ & $\log(1) = 0$\\
+	\end{tabular*}
+\end{sectionbox}
+
+
+\begin{sectionbox}
+	\subsection[Matrizen]{Matrizen $\ma A \in\mathbb{K}^{m \times n}$}
+	$\ma A=(a_{ij}) \in \mathbb K^{m\times n}$ hat $m$ Zeilen (Index $i$) und $n$ Spalten (Index $j$)
+	\begin{tabular*}{\columnwidth}{ll}
+		$(\ma A + \ma B)^\top = \ma A^\top + \ma B^\top$ & $(\ma A \cdot \ma B)^\top = \ma B^\top \cdot \ma A^\top$\\
+		${(\ma A^\top)}^{-1} = {(\ma A^{-1})}^\top$ & $(\ma A \cdot \ma B)^{-1} = \ma B^{-1}\ma A^{-1}$
+	\end{tabular*}
+	$\dim \mathbb K = n = \rang\ma A + \dim\ker\ma A$ \qquad $\rang\ma A = \rang\ma A^\top$
+	
+	
+	\subsubsection{Quadratische Matrizen $A \in \mathbb{K}^{n \times n}$}
+	regulär/invertierbar/nicht-singulär $\Leftrightarrow \det (\ma A) \ne 0 \Leftrightarrow \rang\ma A = n$\\
+	singulär/nicht-invertierbar $\Leftrightarrow \det (\ma A) = 0 \Leftrightarrow \rang\ma A \ne n$\\
+	orthogonal $\Leftrightarrow \ma A^\top=\ma A^{-1} \Ra \det(\ma A) = \pm 1$\\
+	symmetrisch: $\ma A=\ma A^\top$ \qquad schiefsymmetrisch: $\ma A=-\ma A^\top$
+	%\item hermitsch: $\ma A=\overline{\ma A}^\top$, unitär:$\ma A^{-1} = \overline{\ma A}^\top$
+	
+	
+	\subsubsection[Determinante]{Determinante von $\ma A\in \mathbb K^{n\times n}$: $\det(\ma A)=|\ma A|$}
+	$\det\mat{ \ma A & \ma 0 \\ \ma C& \ma D }= \det\mat{ \ma A & \ma B \\ \ma 0 & \ma D } = \det(\ma A)\det(\ma D)$ \\
+	\begin{tabular*}{\columnwidth}{@{\extracolsep\fill}ll}
+		$\det(\ma A) = \det(\ma A^T)$ & $\det(\ma A^{-1}) = \det(\ma A)^{-1}$
+	\end{tabular*}
+	$\det(\ma A\ma B) = \det(\ma A)\det(\ma B) = \det(\ma B)\det(\ma A) = \det(\ma B\ma A)$\\
+	Hat $\ma A$ 2 linear abhäng. Zeilen/Spalten $\Rightarrow |\ma A|=0$ \\
+	
+	\subsubsection{Eigenwerte (EW) $\lambda$ und Eigenvektoren (EV) $\underline v$}
+	\begin{emphbox}
+		\large $\ma A \vec v = \lambda \vec v$ \quad\ $\det \ma A = \prod \lambda_i$ \quad\ $\Sp \ma A = \sum a_{ii} = \sum \lambda_i$
+	\end{emphbox}
+	Eigenwerte: $\det(\ma A - \lambda \ma 1) = 0$ Eigenvektoren: $\ker(\ma A - \lambda_i \ma 1) = \vec v_i$\\
+	EW von Dreieck/Diagonal Matrizen sind die Elem. der Hauptdiagonale.
+	
+	
+	\subsubsection{Spezialfall $2 \times 2$ Matrix $A$}
+	\parbox{3cm}{ $\det(\ma A) = ad-bc$ \\ $\Sp(\ma A) = a+d$ } $\mat{a & b\\ c & d}^{-1} = \frac{1}{\det \ma A} \mat{d & -b\\ -c& a}$\\
+	$\lambda_{1/2} = \frac{\Sp \ma A}{2} \pm \sqrt{ \left( \frac{\mathrm{sp} \ma A}{2} \right)^2 - \det \ma A }$
+	
+	\subsubsection{Differentiation}
+	$\frac{\partial \vec x^\top \vec y}{\partial \vec x} = \frac{\partial \vec y^\top \vec x}{\partial \vec x} = \vec y$\qquad
+	$\frac{\partial \vec x^\top \ma A \vec x}{\partial \vec x} = (\ma A + \ma A^\top)\vec x$ \\
+	$\frac{\partial \vec x^\top \ma A \vec y}{\partial \ma A} = \vec x \vec y^\top$ \qquad $\frac{\partial \det( \ma B \ma A \ma C )}{\partial \ma A} = \det(\ma B \ma A \ma C) \left( \ma A^{-1} \right)^\top$
+\end{sectionbox}
+
+
+
+\begin{sectionbox}
+	\subsubsection{Ableitungsregeln ($\forall \lambda, \mu \in \mathbb R$)}
+	\begin{tabular}{@{}l@{\quad}ll@{}}
+		Linearität: & $(\lambda f + \mu g)' (x) = \lambda f'(x) + \mu g'(x_0)$  \\
+		Produkt: & $(f \cdot g)'(x) = f'(x) g(x) + f(x) g'(x)$\\
+		Quotient: & $\left(\frac{f}{g}\right)' (x) = \frac{g(x)f'(x) -f(x) g'(x)}{g(x)^2}$ \quad $\left(\frac{\text{NAZ}-\text{ZAN}}{\text{N}^2}\right)$\\
+		Kettenregel & $\left( f\bigl(g(x)\bigr) \right)' = f'\bigl(g(x)\bigr) g'(x)$\\
+	\end{tabular}
+\end{sectionbox}
+
+\begin{sectionbox}
+	\subsection{Integrale $\int e^x\mathrm dx = e^x = (e^x)'$}
+	%$\int_a^b f(x) \mathrm dx = F(b) - F(a)$\\
+	\begin{tabular*}{\columnwidth}{ll}
+		Partielle Integration: & $\int uw'=uw-\int u'w$\\
+		Substitution: & $\int f(g(x)) g'(x)\diff x=\int f(t)\diff t$
+	\end{tabular*}
+	\begin{tablebox}{@{\hspace{5mm}}c@{\extracolsep\fill}c@{\extracolsep\fill}c@{\hspace{5mm}}}
+		$F(x) - C$ & $f(x)$ & $f'(x)$ \\ \cmrule
+		$\frac{1}{q+1}x^{q+1}$ & $x^q$ & $qx^{q-1}$ \\[1em]
+		\raisebox{-0.2em}{$\frac{2\sqrt{ax^3}}{3}$} & $\sqrt{ax}$ & \raisebox{0.2em}{$\frac{a}{2\sqrt{ax}}$}\\
+		$x\ln(ax) -x$ & $\ln(ax)$ & $\textstyle \frac{1}{x}$\\
+		$\frac{1}{a^2} e^{ax}(ax- 1)$ & $x \cdot e^{ax}$ & $e^{ax}(ax+1)$ \\
+		$\frac{a^x}{\ln(a)}$ & $a^x$ & $a^x \ln(a)$ \\
+		$-\cos(x)$ & $\sin(x)$ & $\cos(x)$\\
+		$\cosh(x)$ & $\sinh(x)$ & $\cosh(x)$\\
+		$-\ln |\cos(x)|$ & $\tan(x)$ & $\frac{1}{\cos^2(x)}$ \\
+	\end{tablebox}
+	
+	\begin{tabular*}{\columnwidth}{ll}
+		\multicolumn{2}{c}{$\int e^{at} \sin(bt) \diff t = e^{at} \frac{a \sin(bt) + b \cos(bt)}{a^2 + b^2}$}\\
+		$\int \frac{\diff t}{\sqrt{at+b}} = \frac{2 \sqrt{at+b}}{a}$ & $\int t^2 e^{at} \diff t = \frac{(ax-1)^2+1}{a^3} e^{at}$\\
+		$\int t e^{at} \diff t = \frac{at-1}{a^2} e^{at}$ & $\int x e^{ax^2} \diff x = \frac{1}{2a} e^{ax^2}$\\
+	\end{tabular*}
+	
+	\subsubsection{Volumen und Oberfläche von Rotationskörpern um $x$-Achse}
+	$V = \pi \int_a^b f(x)^2 \mathrm dx$ \qquad \quad $O = 2 \pi \int_a^b f(x) \sqrt{1 + f'(x)^2} \mathrm dx$
+\end{sectionbox}
+\section{Matrix Calculus}
+\begin{sectionbox}
+	Consider the quadradic scalar function $f(\mathbf{x})$ with $\mathbf{x} \in \mathbb{R}^n$. Then we can compute the Gradient and Hessian according to:
+	
+\begin{emphbox}
+$$
+f =\mathbf{x}^{T} \mathbf{A} \mathbf{x}+\mathbf{b}^{T} \mathbf{x} 	
+$$
+$$
+\nabla_{\mathbf{x}} f=\frac{\partial f}{\partial \mathbf{x}}=\left(\mathbf{A}+\mathbf{A}^{T}\right) \mathbf{x}+\mathbf{b}
+$$
+$$
+\frac{\partial^{2} f}{\partial \mathbf{x} \partial \mathbf{x}^{T}} =\mathbf{A}+\mathbf{A}^{T}
+$$
+\end{emphbox}
+Derivate in denominator layout:
+$\frac{\partial \mathbf{A} \mathbf{x}}{\partial \mathbf{x}}=\mathbf{A}^T$
+$\frac{\partial \mathbf{x}^{\top} \mathbf{A}}{\partial \mathbf{x}}=\mathbf{A}$
+\end{sectionbox}
+\section{Element of Optimization}
+\begin{sectionbox}
+A vector $x$ is called feasible if $x \in \mathcal{X} .$ In addition, a vector $x^{\star}$ is optimal if $x^{\star}$ is feasible and $f\left(\boldsymbol{x}^{\star}\right) \leq f(\boldsymbol{x})$ for all feasible $\boldsymbol{x}$. The optimum objective $f\left(\boldsymbol{x}^{\star}\right)$ (if $\boldsymbol{x}^{\star}$ exists) is called the minimum value or simply the minimum of the optimization problem.
+\begin{emphbox}
+$$
+\begin{aligned}
+	\min _{x} f(x) \quad \text { s. t. } \quad & g_{i}(x) \leq 0, \forall i \in\{1, \ldots, \ell\} \\
+	& h_{j}(x)=0, \forall j \in\{1, \ldots, m\}, \\
+	& x \in \mathcal{S} .
+\end{aligned}
+$$
+
+\end{emphbox}
+The $\ell$ inequality constraints $g_{i}(\boldsymbol{x}) \leq 0, i \in\{1, \ldots, \ell\}$, and the $m$ equality constraints $h_{j}(\boldsymbol{x})=0$, $j \in\{1, \ldots, m\}$, are then specified by functions that map from $\mathcal{S} \subset \mathbb{R}^{n}$ to $\mathbb{R}$, i.e., $g_{i}: \mathcal{S} \rightarrow \mathbb{R}$ and $h_{j}: \mathcal{S} \rightarrow \mathbb{R}$. A single equality constraint $h_{j}(x)=0$ can obviously be replaced by two inequality constraints of the form $h_{j}(x) \leq 0$ and $-h_{j}(x) \leq 0$. The abstract constraint set $\mathcal{S} \subset \mathbb{R}^{n}$ may have an arbitrary structure and can for example be used to include constraints which cannot easily be expressed by inequality constraints.
+\end{sectionbox}
+
+\begin{sectionbox}
+
+If the objective function $f$ 'maps $\mathcal{X}$ to $\mathbb{R}_{++}$, then another equivalent formulation of the optimization problem is
+$$
+\min _{x} \log (f(x)) \quad \text { s. t. } \quad \boldsymbol{x} \in \mathcal{X} \text {. }
+$$
+\end{sectionbox}
+\subsection{Topology}
+\begin{sectionbox}
+\textbf{1}. The $\varepsilon$-neighborhood $\mathcal{U}_{\varepsilon}(x)$ around a point $x \in \mathbb{R}^{n}$ is the set of points $y \in \mathbb{R}^{n}$ that satisfy the inequality $d(\boldsymbol{x}, \boldsymbol{y})=\|\boldsymbol{y}-\boldsymbol{x}\|_{2}<\varepsilon$, where $d(\boldsymbol{x}, \boldsymbol{y})$ denotes the (Euclidean) distance between $x$ and $y$. In $\mathbb{R}^{n}$, the $\varepsilon$-neighborhood $\mathcal{U}_{\varepsilon}(x)$ thus is the (open) ball with radius $\varepsilon>0$ around $x$.\\
+\textbf{2.} A point $x \in \mathbb{R}^{n}$ is said to belong to the closure of $\mathcal{X}$, denoted by $\operatorname{cl}(\mathcal{X})$, if $\mathcal{X} \cap \mathcal{U}_{\varepsilon}(x) \neq \emptyset$ for every $\varepsilon>0$.\\
+\textbf{3.} A point $x \in \mathbb{R}^{n}$ is said to belong to the interior of $\mathcal{X}$, denoted by int $(\mathcal{X})$, if its $\varepsilon$-neighborhood $\mathcal{U}_{\varepsilon}(x)$ is a subset of $\mathcal{X}$ for some $\varepsilon>0$.\\
+\textbf{4.} The set $\mathcal{X}$ is called solid if it has nonempty interior.
+\textbf{5.} If $\mathcal{X}$ corresponds to its closure, i.e., if $\mathcal{X}=\mathrm{d}(\mathcal{X})$, the set $\mathcal{X}$ is closed.\\
+\textbf{6.} If $\mathcal{X}$ corresponds to its interior, i.e., if $\mathcal{X}=\operatorname{int}(\mathcal{X})$, the set $\mathcal{X}$ is open.\\
+\textbf{7.} A point $x \in \mathbb{R}^{n}$ is said to belong to the boundary of $\mathcal{X}$, denoted by $0 \mathcal{X}$, if $\mathcal{U}_{k}(x)$ contains at least one point in $\mathcal{X}$ and one point not in $\mathcal{X}$ for every $e>0$,\\
+\textbf{8.} The set $\mathcal{X}$ is called bounded if a ball of sufficiently large but finite radius contains $\mathcal{X}$.\\
+\textbf{9.} The set $\mathcal{X}$ is called compact if it is both bounded and closed.
+\begin{emphbox}
+\textbf{Weierstrass'Theorem}\\
+Consider the problem of minimizing a function $f: \mathcal{X} \rightarrow \mathbb{R}$ over the set $\mathcal{X}$. If $f$ is continuous on $X$ and $\mathcal{X}$ is nonempty and compact, then min $_{\infty e x} f(\boldsymbol{x})$ attains its minimum and a minimizing solution $\left\{x^{*}, f\left(x^{*}\right)\right\}$ exists.
+\end{emphbox}
+\end{sectionbox}
+\section{Affine and Convex Sets}
+
+\begin{sectionbox}
+Suppose $x_{1}, \ldots, x_{K}$ are points in $\mathbb{R}^{n}$, then the combination $x=\sum_{i=1}^{K} \lambda_{i} x_{i}$ of these points with $\lambda_{i} \in \mathbb{R}, \forall i \in\{1, \ldots, K\}$, is again a point in $\mathbb{R}^{n}$. Depending on the restrictions imposed on the scalar coefficients $\lambda_{i}$, we distinguish the following four kinds of combinations:\\
+\textbf{1. Linear combination}
+\begin{emphbox}
+$\mathbf{x} = \sum_{i=1}^{K} \lambda_i \mathbf{x}_i \quad \lambda_i \in \mathbb{R} \quad \forall i\in\{1,\dots,K\}$\\
+\end{emphbox}
+\textbf{2. Affine Combination}
+\begin{emphbox}
+$\mathbf{x} = \sum_{i=1}^{K} \lambda_i \mathbf{x}_i \quad \lambda_i \in \mathbb{R} \quad \forall i\in\{1,\dots,K\}, \quad \sum_{i=1}^K \lambda_i = 1$\\
+\end{emphbox}
+For $K=2$, we have $x=\lambda_{1} x_{1}+\lambda_{2} x_{2}=\lambda x_{1}+(1-\lambda) x_{2}=$ $x_{2}+\lambda\left(x_{1}-x_{2}\right)$, where $\lambda_{1}=\lambda \in \mathbb{R}$ and $\lambda_{2}=1-\lambda \in \mathbb{R}$. Hence, the set of vectors $x$ that can be represented by an affine combination of the two vectors $x_{1}$ and $x_{2}$ is a line with position vector $x_{2}$ and direction vector $x_{1}-x_{2}$\\
+\textbf{3. Convex Combination}
+\begin{emphbox}
+$\mathbf{x} = \sum_{i=1}^{K} \lambda_i \mathbf{x}_i \quad \lambda_i \geq 0 \quad \forall i\in\{1,\dots,K\}, \quad \sum_{i=1}^K \lambda_i = 1$\\
+\end{emphbox}
+\textbf{4. Conic Combination}
+\begin{emphbox}
+$\mathbf{x}=\sum_{i=1}^{K} \lambda_{i}{x}_{i}, \quad \lambda_{i} \geq 0, \forall i \in\{1, \ldots, K\}$
+\end{emphbox}
+Using induction from the definitions of affine and convex sets, it can be shown that an affine/a comex set contains every affine/convex combination of its points:
+- If $\mathcal{X}$ is affine, $x_{i} \in \mathcal{X}, \lambda_{i} \in \mathbb{R}, \forall i \in\{1, \ldots, K\}$, and $\sum_{i=1}^{K} \lambda_{i}=1$, then $\boldsymbol{x}=\sum_{i=1}^{K} \lambda_{i} \boldsymbol{x}_{i} \in \mathcal{X} .$
+- If $X$ is convex, $x_{i} \in \mathcal{X}, \lambda_{i} \geq 0, \forall i \in\{1, \ldots, K\}$, and $\sum_{i=1}^{K} \lambda_{i}=1$, then $\boldsymbol{x}=\sum_{i=1}^{K} \lambda_{i} \boldsymbol{x}_{i} \in \mathcal{X} .$
+Observe that every affine set is also convex.
+
+\end{sectionbox}
+\begin{sectionbox}
+\subsection{Convex and Conic Hulls}
+The convex hull of a set $\mathcal{X}$, denoted by conv $(\mathcal{X})$, is the set of all convex combinations of $\mathcal{X}$, i.e.,
+$$
+\operatorname{conv}(\mathcal{X})=\{x \in \mathbb{R}^{n}: x=\sum_{i=1}^{K} \lambda_{i} x_{i}, \lambda_{i} \geq 0, \forall i \in\{1, \ldots, K\},$$
+$$ 
+\sum_{i=1}^{K} \lambda_{i}=1\},
+$$
+
+The conic hull of a set $\mathcal{X}$, denoted by cone $(\mathcal{X})$, is the collection of all conic combinations of $\mathcal{X}$, i.e.,
+$$
+\operatorname{cone}(\mathcal{X})=\left\{x \in \mathbb{R}^{n}: x=\sum_{i=1}^{K} \lambda_{i} x_{i}, \lambda_{i} \geq 0, \forall i \in\{1, \ldots, K\}\right\}
+$$
+where $K$ is a positive integer and $x_{1}, \ldots, x_{K} \in \mathcal{X}$.
+\end{sectionbox}
+
+\begin{sectionbox}
+\subsection{Caratheodorys Theorem}
+
+\textbf{Simplex and Polytope}\\
+The convex hull of a finite number of points $x_{1}, \ldots, x_{K}$ in $\mathbb{R}^{n}$ is called a polytope. If such a polytope in $\mathbb{R}^{n}$ can be represented as the convex hull of at most $K \leq n+1$ points $x_{1}, \ldots, x_{K}$ such that $x_{2}-x_{1}, \ldots, x_{K}-x_{1}$ are linearly independent, $^{2}$ it is called a simplex.\\
+
+Let $\mathcal{X}$ be an arbitrary set in $\mathbb{R}^{n}$ and $x \in \operatorname{conv}(\mathcal{X})$. Then, there exist $n+1$ points $x_{1}, \ldots, x_{n+1} \in \mathcal{X}$ such that $\boldsymbol{x} \in \operatorname{conv}\left(\left\{\boldsymbol{x}_{1}, \ldots, \boldsymbol{x}_{n+1}\right\}\right)$, i.e., $\boldsymbol{x}$ can be represented as
+\begin{emphbox}
+$$
+\boldsymbol{x}=\sum_{i=1}^{n+1} \lambda_{i} \boldsymbol{x}_{i}, \quad \boldsymbol{x}_{i} \in \mathcal{X}, \lambda_{i} \geq 0, \forall i \in\{1, \ldots, n+1\},
+$$
+with
+$
+\sum_{i=1}^{n+1} \lambda_{i}=1
+$
+\end{emphbox}
+\end{sectionbox}
+\begin{sectionbox}
+\subsection{Hyperplane and Separation Theorem}
+
+A hyperplane $\mathcal{H}$ in $\mathbb{R}^{n}$ is the collection of points $x \in \mathbb{R}^{n}$ satisfying $p^{\mathrm{T}}(x-\overline{\boldsymbol{x}})=$ $p^{\mathrm{T}} x-\alpha=0$, where $p \neq 0$ is called the normal vector and $\alpha=p^{\mathrm{T}} \overline{\boldsymbol{x}} \in \mathbb{R}, \overline{\boldsymbol{x}} \in \mathcal{H} .$ Any such hyperplane $\mathcal{H} \subset \mathbb{R}^{n}$ defines two closed half-spaces $\mathcal{H}^{+}=\left\{\boldsymbol{x} \in \mathbb{R}^{n}: \boldsymbol{p}^{\mathrm{T}} \boldsymbol{x}-\alpha=\boldsymbol{p}^{\mathrm{T}}(\boldsymbol{x}-\overline{\boldsymbol{x}}) \geq 0\right\}$ and $\mathcal{H}^{-}=\left\{x \in \mathbb{R}^{n}: p^{\mathrm{T}} x-\alpha=p^{\mathrm{T}}(x-\bar{x}) \leq 0\right\}$ as well as two open half-spaces given by $\left\{x \in \mathbb{R}^{n}: p^{\mathrm{T}} x-\alpha=p^{\mathrm{T}}(x-\bar{x})>0\right\}$ and $\left\{x \in \mathbb{R}^{n}: p^{\mathrm{T}} x-\alpha=p^{\mathrm{T}}(x-\bar{x})<0\right\}$.
+
+\textbf{Fundamental Separation Theorem}
+\begin{emphbox}
+Let $\mathcal{X}$ be a nonempty closed convex set in $\mathbb{R}^{n}$ and let $y \notin \mathcal{X}$. Then, there exists a normal vector $p \in \mathbb{R}^{n}$ and a scalar $\alpha$ such that $p^{\mathrm{T}} y>\alpha$ and $p^{\mathrm{T}} x \leq \alpha$ for each $x \in \mathcal{X} .$
+\end{emphbox}
+
+Observe that the angle between $y-\overline{\boldsymbol{x}}$ and $\boldsymbol{x}-\overline{\boldsymbol{x}}$ is greater than or equal to $90^{\circ}$ for every $x \in \mathcal{X}$. This means that the set $\mathcal{X}$ lies in the half-space $p^{\mathrm{T}}(x-\bar{x}) \leq 0$ relative to the hyperplane $p^{\mathrm{T}}(x-\bar{x})=0$ passing through $\bar{x}$ and having normal vector $p=y-\bar{x}$.
+\end{sectionbox}
+\begin{sectionbox}
+\subsection{Supporting Hyperplane Theorem}
+\begin{emphbox}
+Let $\mathcal{X} \subset \mathbb{R}^{n}$ be a nonempty closed convex set and let $\bar{x} \in \partial \mathcal{X}$. Then, there exists a hyperplane that supports $\mathcal{X}$ at $\overline{\boldsymbol{x}}$, i.e., there exists a nonzero vector $p \in \mathbb{R}^{n}$ such that $p^{\mathrm{T}}(x-\overline{\boldsymbol{x}}) \leq 0$ for every $x \in \mathcal{X}$.
+\end{emphbox}
+
+
+Let $\mathcal{X}_{1}$ and $\mathcal{X}_{2}$ be nonempty convex sets in $\mathbb{R}^{n}$ such that $\mathcal{X}_{1} \cap \mathcal{X}_{2}=\emptyset .$ Then, there exists a hyperplane that separates $\mathcal{X}_{1}$ and $\mathcal{X}_{2}$, i.e., there exists a nonzero vector $p \in \mathbb{R}^{n}$ such that $\inf _{x_{1} \in \mathcal{X}_{1}} \boldsymbol{p}^{\mathrm{T}} \boldsymbol{x}_{1} \geq \sup _{x_{2} \in \mathcal{X}_{2}} \boldsymbol{p}^{\mathrm{T}} \boldsymbol{x}_{2} .$
+\end{sectionbox}
+\begin{sectionbox}
+\subsection{Farkas Theorem}
+\begin{emphbox}
+	\begin{flushleft}
+
+
+Given a matrix $\boldsymbol{A}=\left[\boldsymbol{a}_{1}, \ldots, \boldsymbol{a}_{m}\right]^{\mathrm{T}} \in \mathbb{R}^{m \times n}$ and a vector $\boldsymbol{c} \in \mathbb{R}^{n}$, exactly one of the following two systems of equations and inequalities has a solution:\\
+
+1. $\exists x \in \mathbb{R}^{n}$ with $A x \leq 0$ and $c^{\mathrm{T}} x>0 \Leftrightarrow \exists x$ with $a_{i}^{\mathrm{T}} x \leq 0, \forall i \in\{1, \ldots, m\}$, and $c^{\mathrm{T}} x>0$,\\
+
+2. $\exists y \in \mathbb{R}^{m}$ with $A^{\mathrm{T}} \boldsymbol{y}=\boldsymbol{c}=\sum_{i=1}^{m} \boldsymbol{a}_{i} y_{i}$ and $\boldsymbol{y} \geq \mathbf{0}$.
+	\end{flushleft}
+\end{emphbox}
+The geometrical interpretation of Farkas' theorem is that System $2 \mathrm{has}$ has a solution if $c$ can be represented as a conic combination of the columns of $\boldsymbol{A}^{\mathrm{T}}=\left[\boldsymbol{a}_{1}, \ldots, \boldsymbol{a}_{m}\right]$, i.e., if $c \in \operatorname{cone}\left(\left\{a_{1}, \ldots, a_{m}\right\}\right)=: \mathcal{A}$.
+
+\textbf{Gordans Theorem}\\
+Given a matrix $A \in \mathbb{R}^{m \times n}$, exactly one of the following two systems of equations and inequalities has a solution:\\
+1. $\exists x \in \mathbb{R}^{n}$ with $A x<0$,\\
+2. $\exists y \in \mathbb{R}^{m}$ with $A^{\mathrm{T}} y=0, y \geq 0, y \neq 0$.
+\end{sectionbox}
+\begin{sectionbox}
+\subsection{Corollaries from Farkas}
+\textbf{Corollary} Given a matrix $A \in \mathbb{R}^{m \times n}$ and a vector $c \in \mathbb{R}^{n}$, exactly one of the following two systems of inequalities has a solution:\\
+1. $\exists x \in \mathbb{R}^{n}$ with $A x \leq 0, x \geq 0, c^{\mathrm{T}} x>0$,\\
+2. $\exists y \in \mathbb{R}^{m}$ with $A^{\mathrm{T}} y \geq c, y \geq 0$.\\
+
+\textbf{Corollary} Given matrices $A \in \mathbb{R}^{m \times n}, B \in \mathbb{R}^{\ell \times n}$, and a vector $c \in \mathbb{R}^{n}$, exactly one of the following two systems of equations and inequalities has a solution:\\
+1. $\exists x \in \mathbb{R}^{n}$ with $A x \leq 0, B x=0, c^{\mathrm{T}} x>0$,\\
+2. $\exists y \in \mathbb{R}^{m}, z \in \mathbb{R}^{\ell}$ with $A^{\mathrm{T}} y+B^{\mathrm{T}} z=c, y \geq 0$.
+
+\end{sectionbox}
+\section{Convex Functions}
+\begin{sectionbox}
+\textbf{Convex Function}
+\begin{emphbox}
+\begin{flushleft}
+Let $f: \mathcal{X} \rightarrow \mathbb{R}$, where $\mathcal{X} \subset \mathbb{R}^{n}$ is a nonempty convex set. Then, the function $f$ is convex on $\mathcal{X}$ if for all $x_{1}, x_{2} \in \mathcal{X}$ and $\lambda \in[0,1]$, we have
+$$
+f\left(\lambda x_{1}+(1-\lambda) x_{2}\right) \leq \lambda f\left(x_{1}\right)+(1-\lambda) f\left(x_{2}\right)
+$$
+A function $f$ is called strictly convex if strict inequality holds whenever $x_{1} \neq x_{2}$ and $0<\lambda<1$. We say that $f$ is (strictly) concave if $-f$ is (strictly) convex.
+\end{flushleft}
+\end{emphbox}
+
+For affine functions, equality always holds. Therefore, affine functions are both convex and concave. Conversely, any function that is both convex and concave is affine
+\end{sectionbox}
+\begin{sectionbox}
+\subsection{Convexity Holding Operations}
+1. Let $f_{i}: \mathcal{X} \rightarrow \mathbb{R}, \forall i \in\{1, \ldots, K\}$, be convex functions on $X \subset \mathbb{Z}^{n}$. Then,
+(a) $f(\boldsymbol{x})=\sum_{i=1}^{K} \lambda_{i} f_{i}(\boldsymbol{x})$, where $\lambda_{i} \geq 0, \forall i \in\{1 \ldots . K\}$, is a comver function, and
+(b) the pointwise maximum $f(x)=\max _{i=1}, \ldots\left\{f_{1}(x)_{\text {o.... }} f_{x}(x)\right\}$ is a convex function.\\
+2. Let $g: \mathbb{R} \rightarrow \mathbb{R}$ be a nondecreasing, univariate, convex function, and let $\not: \mathbb{Z} \rightarrow \mathbb{R}$ be a convex function on $\mathcal{X} \subset \mathbb{R}^{n}$. Then, the composite function $g(\not{h}(\boldsymbol{x}))$ is convex.\\
+3. Let $g: \mathbb{R}^{m} \rightarrow \mathbb{R}$ be a convex function, and let $h: \mathbb{R}^{n} \rightarrow \mathbb{R}^{m}$ be an affine function af the form $h(x)=A x+b$, where $A \in \mathbb{R}^{m \times n}$ and $b \in \mathbb{R}^{m}$. Then, the composite function $f=\mathbb{Z}^{2}-\mathbb{Z}$ defined by $f(\boldsymbol{x})=g(\boldsymbol{h}(\boldsymbol{x}))$ is convex.\\
+4. A function $f: \mathcal{X} \rightarrow \mathbb{R}$ is convex if and only if for every $x \in X \subset \mathbb{R}^{\text {n }}$ and $x \in \mathbb{Z}^{\text {n, }}$, the function $g(t)=f(x+t v)$ is convex on its domain $\operatorname{dom}(g)=\{t \in \mathbb{R}=x+t v=x\}$. In other words a function is convex if and only if it is convex when restricted to any line that intersects its domain. This property can simplify the check whether a function is convex or not by restricting it to a line.\\
+5. Let $\mathcal{X}$ be a nonempty convex set in $\mathbb{R}^{n}$, and let $f=\mathcal{X} \rightarrow \mathbb{R}$ be convex. Then, the function $f$ is continuous on the interior of $\mathcal{X}$. It can hence have discontinuities only on the boundaries of its domain.\\
+\end{sectionbox}
+
+\begin{sectionbox}
+6. Let $f: \mathcal{X} \rightarrow \mathbb{R}$ be a convex function on $\mathcal{X} \subset \mathbb{R}^{n}$. Then, the $\alpha$-sublevel set of $f$ - which is given by $\mathcal{X}_{\alpha}=\{x \in \mathcal{X}: f(x) \leq \alpha\}$, is convex for any $\alpha \in \mathbb{R}$. Consequently, if $g_{i}: \mathbb{Z}^{2}-\mathbb{Z}$. $\forall i \in\{1, \ldots, m\}$, are convex, the set $\left\{x \in \mathbb{R}^{n}: g_{i}(x) \leq 0, i=1, \ldots m\right\}$ is a convex set.\\
+The converse is not true, though. As a counterexample, consider the function $f(x)=-$ While all its sublevel sets are convex, $-e^{x}$ is not convex burt concave on $\mathbb{R}$.
+\end{sectionbox}
+\begin{sectionbox}
+\subsection{Epi- and Hypograph}
+Let $\mathcal{X}$ be a nonempty set in $\mathbb{R}^{n}$, and let $f: \mathcal{X} \rightarrow \mathbb{R}$. The epigraph of the function $f$, denoted by epi $(f)$, is a subset of $\mathbb{R}^{n+1}$ defined by
+$$
+\text { epi }(f)=\left\{\left[\begin{array}{l}
+	x \\
+	y
+\end{array}\right] \in \mathbb{R}^{n+1}: x \in \mathcal{X}, y \geq f(x)\right\}
+$$
+Similarly, the hypograph of the function $f$, denoted by hypo $(f)$, is a subset of $\mathbb{R}^{n+1}$ defined by
+$$
+\operatorname{hypo}(f)=\left\{\left[\begin{array}{l}
+	x \\
+	y
+\end{array}\right] \in \mathbb{R}^{n+1}: x \in \mathcal{X}, y \leq f(x)\right\}
+$$
+\end{sectionbox}
+\begin{sectionbox}
+\subsection{Subgradient}
+Let $\mathcal{X}^{\prime}$ be a nonempty convex set in $\mathbb{R}^{n}$, and let $f: \mathcal{X} \rightarrow \mathbb{R}$ be a convex function on $\mathcal{X}$. Then, $\varepsilon$ is called a subgradient of $f$ at $\bar{x} \in \mathcal{X}$ if
+\begin{emphbox}
+\begin{flushleft}
+$$
+f(x) \geq f(\bar{x})+\xi^{\mathrm{T}}(x-\bar{x}), \quad \forall x \in \mathcal{X}
+$$
+\end{flushleft}
+\end{emphbox}
+Similary, let $f: \mathcal{X} \rightarrow \mathbb{R}$ be a concave function. Then, $\xi$ is called a subgradient of $f$ at $\bar{x} \in \mathcal{X}$ if
+$$
+f(x) \leq f(\bar{x})+\xi^{\mathrm{T}}(x-\bar{x}), \quad \forall x \in \mathcal{X} .
+$$
+Note that the subgradient of a convex or a concave function $f: \mathcal{X} \rightarrow \mathbb{R}$ at some point $\bar{x} \in \mathcal{X}$ is not necessarily unique. The collection of all subgradients of $f$ at $\bar{x}$ is known as the subdifferential of $f$ at $\bar{x}$, denoted as $\partial f(\bar{x})$.
+\end{sectionbox}
+\begin{sectionbox}
+\subsection{Diff'able Convex Functions}
+Let $\mathcal{L}$ be ca nonempty open convex set in $\mathbb{R}^{n}$, and let $f: \mathcal{X} \rightarrow \mathbb{R}$ be a differentiable function. Then, $f$ is convex if and only if for any $x \in \mathcal{X}$, we have
+\begin{emphbox}
+\begin{flushleft}
+$$
+f(x) \geq f(\bar{x})+\nabla f(\bar{x})^{\top}(x-\bar{x}), \quad x \in \mathcal{X} .
+$$
+\end{flushleft}
+\end{emphbox}
+
+Similarly, $f$ is strictly convex if and only if the inequality is strict for all $x \in \mathcal{X}, x \neq \bar{x}$.\\
+The Hessian of a differentiable convex function is postive semidefinite:
+\begin{emphbox}
+$\mathcal{H} \geq 0$
+\end{emphbox}
+\end{sectionbox}
+\begin{sectionbox}
+\subsection{Quasiconvex Functions}
+Let $f: \mathcal{X} \rightarrow \mathbb{R}$, where $\mathcal{X}$ is a nonempty convex set in $\mathbb{R}^{n}$. The function $f$ is quasiconvex on $\mathcal{X}$ if for all $x_{1}, x_{2} \in \mathcal{X}$ and $\lambda \in[0,1]$, we have
+\begin{emphbox}
+$$
+f\left(\lambda x_{1}+(1-\lambda) x_{2}\right) \leq \max \left\{f\left(x_{1}\right), f\left(x_{2}\right)\right\} .
+$$
+\end{emphbox}
+
+A function $f$ is called strictly quasiconvex if strict inequality holds in $(3.15)$ for all $\lambda \in(0,1)$ and $\boldsymbol{x}_{1}, \boldsymbol{x}_{2} \in \mathcal{X}$ such that $f\left(\boldsymbol{x}_{1}\right) \neq f\left(\boldsymbol{x}_{2}\right)$. Furthermore, $f$ is (strictly) quasiconcave if $-f$ is (strictly) quasiconvex, and $f$ is called quasimonotone if it is both quasiconvex and quasiconcave.
+\end{sectionbox}
+% ======================================================================
+% End
+% ======================================================================
+\end{document}
