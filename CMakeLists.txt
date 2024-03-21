@@ -9,9 +9,16 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
+set(IMAGE_DIRS
+    img
+    #Add subdirectories here
+    #img/logic
+	#img/rca
+)
+
 add_latex_document(
     CheatsheetTemplate.tex
     FORCE_PDF
-    IMAGE_DIRS img
+    IMAGE_DIRS ${IMAGE_DIRS}
     DEPENDS writegitid
 )
