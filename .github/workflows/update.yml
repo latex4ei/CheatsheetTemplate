@@ -18,10 +18,11 @@ jobs:
       - name: Update README
         run: |
           sed -i "1s/.*/# ${{ env.REPO_NAME }}/" README.md
-          sed -i "/Actions Status/c\[![Actions Status](https://github.com/${{ github.repository }}/workflows/CI/badge.svg)](https://github.com/${{ github.repository }}/workflows/CI)" README.md
+          sed -i "/Actions Status/c\[![Actions Status](https://github.com/${{ github.repository }}/workflows/CI/badge.svg)](https://github.com/${{ github.repository }})" README.md
 
       - name: Update CMakeLists.txt with new LaTeX file name
         run: |
+          sed -i "/project(/c\\project(${{ env.REPO_NAME }} NONE)" CMakeLists.txt
           sed -i "0,/[^ ]*\.tex/s//${{ env.REPO_NAME }}.tex/" CMakeLists.txt
 
       - name: Setup Git
