@@ -11,9 +11,9 @@ add_custom_target(
 
 set(IMAGE_DIRS
     img
-    #Add subdirectories here
-    #img/logic
-	#img/rca
+    # Add subdirectories here
+    # img/logic
+    # img/rca
 )
 
 add_latex_document(
