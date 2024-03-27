@@ -24,5 +24,6 @@ cmake ..
 make
 ```
 ## Disclaimer
+
 After changing the repository name or transfering ownership, run the "Update README and LaTeX Build" workflow from the Actions tab.
-Make sure the .tex file has the same name as the repository in order for it to build correctly!
+Make sure the `.tex` file has the same name as the repository in order for it to build correctly!
