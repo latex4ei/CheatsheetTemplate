@@ -1,6 +1,6 @@
-# LaTeX4EI Cheatsheet Template
+# CheatsheetTemplate
 
-[![Actions Status](https://github.com/latex4ei/CheatsheetTemplate/workflows/CI/badge.svg)](https://github.com/latex4ei/CheatsheetTemplate)
+[![Actions Status](https://github.com/dariusptrs/CheatsheetTemplate/workflows/CI/badge.svg)](https://github.com/dariusptrs/CheatsheetTemplate)
 [![Join the chat at https://gitter.im/LaTeX4Ei/Lobby](https://badges.gitter.im/LaTeX4Ei/Lobby.svg)](https://gitter.im/LaTeX4Ei/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Write beautiful latex cheat sheets with minimal effort.
