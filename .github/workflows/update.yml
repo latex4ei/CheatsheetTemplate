@@ -1,29 +1,52 @@
 name: Update README and LaTeX Build File
 
 on:
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
-  update-files-and-rename-tex:
+  update-files:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Extract repository name
-        run: echo "REPO_NAME=$(echo ${{ github.repository }} | sed 's|.*/||')" >> $GITHUB_ENV
-
-      - name: Update README
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      
+      - name: Update files with Python
         run: |
-          sed -i "1s/.*/# ${{ env.REPO_NAME }}/" README.md
-          sed -i "/Actions Status/c\[![Actions Status](https://github.com/${{ github.repository }}/workflows/CI/badge.svg)](https://github.com/${{ github.repository }})" README.md
+          python -c "\
+          import os, re
 
-      - name: Update CMakeLists.txt with new LaTeX file name
-        run: |
-          sed -i "/project(/c\\project(${{ env.REPO_NAME }} NONE)" CMakeLists.txt
-          sed -i "0,/[^ ]*\.tex/s//${{ env.REPO_NAME }}.tex/" CMakeLists.txt
+          # Extract repository name
+          repo_name = os.getenv('GITHUB_REPOSITORY').split('/')[-1]
+
+          # Update README.md
+          with open('README.md', 'r+') as file:
+              lines = file.readlines()
+              lines[0] = f'# {repo_name}\\n'
+              for i, line in enumerate(lines):
+                  if 'Actions Status' in line:
+                      lines[i] = f'[![Actions Status](https://github.com/{os.getenv('GITHUB_REPOSITORY')}/workflows/CI/badge.svg)](https://github.com/{os.getenv('GITHUB_REPOSITORY')})\\n'
+              file.seek(0)
+              file.writelines(lines)
+              file.truncate()
+
+          # Update CMakeLists.txt with project name
+          with open('CMakeLists.txt', 'r+') as file:
+              content = file.read()
+              content = re.sub(r'project\(([^ ]*)', f'project({repo_name}', content, count=1)
+
+              # Assuming the main LaTeX file is the first .tex file mentioned in CMakeLists.txt
+              content = re.sub(r'([^ ]*\.tex)', f'{repo_name}.tex', content, count=1)
+
+              file.seek(0)
+              file.write(content)
+              file.truncate()\
+          "
 
       - name: Setup Git
         run: |
@@ -32,6 +55,6 @@ jobs:
 
       - name: Commit and push if changed
         run: |
-          git add README.md CMakeLists.txt 
+          git add README.md CMakeLists.txt
           git diff --staged --quiet || git commit -m "Update README and LaTeX build configuration with correct repository name"
           git push
