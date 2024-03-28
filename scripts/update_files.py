@@ -21,8 +21,7 @@ def update_readme_content(content: str, repo_name: str) -> str:
     """Updates the README.md content."""
     content = re.sub(r'^.*', f'# {repo_name}', content, count=1)
     actions_status_line = f'[![Actions Status](https://github.com/{os.getenv("GITHUB_REPOSITORY")}/workflows/CI/badge.svg)](https://github.com/{os.getenv("GITHUB_REPOSITORY")})'
-    content = re.sub(r'\[!\[Actions Status\].*', actions_status_line, content)
-    return content
+    return re.sub(r'\[!\[Actions Status\].*', actions_status_line, content)
 
 def update_cmake_content(content: str, repo_name: str) -> str:
     """Updates the CMakeLists.txt content."""
