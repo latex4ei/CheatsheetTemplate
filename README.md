@@ -25,5 +25,5 @@ make
 ```
 ## Disclaimer
 
-After changing the repository name or transfering ownership, run the "Update README and LaTeX Build" workflow from the Actions tab.
+After changing the repository name or transfering ownership, run the "Update README and LaTeX Build" workflow from the Actions tab and merge the generated pull request.
 Make sure the `.tex` file has the same name as the repository in order for it to build correctly!
