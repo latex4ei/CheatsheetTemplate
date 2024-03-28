@@ -30,7 +30,7 @@ def update_cmake_content(content: str, repo_name: str) -> str:
 
 def main():
     repo_name = os.getenv('GITHUB_REPOSITORY').split('/')[-1]
-    base_path = Path.cwd()
+    base_path = Path(__file__).parent
 
     check_tex_file_exists(repo_name, base_path)
     
