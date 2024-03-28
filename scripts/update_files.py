@@ -5,9 +5,10 @@ import sys
 
 def check_tex_file_exists(repo_name: str, base_path: Path):
     """Check if a .tex file with the same name as the repository exists."""
-    tex_file_path = base_path / f'{repo_name}.tex'
+    tex_file_path = base_path / f"{repo_name}.tex"
     if not tex_file_path.exists():
-        sys.exit(f"Error: No .tex file found with the name {repo_name}.tex")
+        msg = f"No .tex file found with the name {tex_file_path.name}. File name must match repo name."
+        raise FileNotFoundError(msg)
 
 def read_file(file_path: Path) -> str:
     """Reads the entire content of a file and returns it as a string."""
