@@ -14,39 +14,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.12.2'
       
-      - name: Update files with Python
-        run: |
-          python -c "\
-          import os, re
-
-          # Extract repository name
-          repo_name = os.getenv('GITHUB_REPOSITORY').split('/')[-1]
-
-          # Update README.md
-          with open('README.md', 'r+') as file:
-              lines = file.readlines()
-              lines[0] = f'# {repo_name}\\n'
-              for i, line in enumerate(lines):
-                  if 'Actions Status' in line:
-                      lines[i] = f'[![Actions Status](https://github.com/{os.getenv('GITHUB_REPOSITORY')}/workflows/CI/badge.svg)](https://github.com/{os.getenv('GITHUB_REPOSITORY')})\\n'
-              file.seek(0)
-              file.writelines(lines)
-              file.truncate()
-
-          # Update CMakeLists.txt with project name
-          with open('CMakeLists.txt', 'r+') as file:
-              content = file.read()
-              content = re.sub(r'project\(([^ ]*)', f'project({repo_name}', content, count=1)
-
-              # Assuming the main LaTeX file is the first .tex file mentioned in CMakeLists.txt
-              content = re.sub(r'([^ ]*\.tex)', f'{repo_name}.tex', content, count=1)
-
-              file.seek(0)
-              file.write(content)
-              file.truncate()\
-          "
+      - name: Update files
+        run: python scripts/update_files.py
 
       - name: Setup Git
         run: |
