@@ -25,7 +25,7 @@ def update_cmake_content(content: str, repo_name: str) -> str:
 
 def main(github_repository: str):
     repo_name = Path(github_repository).name
-    base_path = Path(__file__).parent
+    base_path = Path(__file__).parent.parent
 
     check_tex_file_exists(repo_name, base_path)
     
