@@ -29,7 +29,7 @@ def update_cmake_content(content: str, repo_name: str) -> str:
     return re.sub(r'([^ ]*\.tex)', f'{repo_name}.tex', content, count=1)
 
 def main():
-    repo_name = os.getenv('GITHUB_REPOSITORY').split('/')[-1]
+    repo_name = Path(os.getenv('GITHUB_REPOSITORY')).name
     base_path = Path(__file__).parent
 
     check_tex_file_exists(repo_name, base_path)
