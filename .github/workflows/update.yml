@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  update-files:
+  update-and-create-pr:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,18 +14,20 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12.2'
+          python-version: '3.x'
       
-      - name: Update files
+      - name: Run update script
         run: python scripts/update_files.py
-
-      - name: Setup Git
+      
+      - name: Commit changes to a new branch
         run: |
-          git config --local user.email "${{ github.actor }}@users.noreply.github.com"
-          git config --local user.name "${{ github.actor }}"
-
-      - name: Commit and push if changed
+          git checkout -b changes/${{ github.run_id }}
+          git add .
+          git commit -m "Apply automated updates"
+          git push -u origin changes/${{ github.run_id }}
+      
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git add README.md CMakeLists.txt
-          git diff --staged --quiet || git commit -m "Update README and LaTeX build configuration with correct repository name"
-          git push
+          gh pr create --base main --head changes/${{ github.run_id }} --title "Review automated updates" --body "Please review the changes applied by the automated script."
