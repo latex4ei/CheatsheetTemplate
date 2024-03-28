@@ -10,18 +10,12 @@ def check_tex_file_exists(repo_name: str, base_path: Path):
         msg = f"No .tex file found with the name {tex_file_path.name}. File name must match repo name."
         raise FileNotFoundError(msg)
 
-def read_file(file_path: Path) -> str:
-    """Reads the entire content of a file and returns it as a string."""
-    return file_path.read_text()
-
-def write_file(file_path: Path, content: str):
-    """Writes the given content to a file, replacing its previous content."""
-    file_path.write_text(content)
-
-def update_readme_content(content: str, repo_name: str) -> str:
+def update_readme_content(content: str, repo_name: str, github_repository: str) -> str:
     """Updates the README.md content."""
+    # Update the first line with the repository name
     content = re.sub(r'^.*', f'# {repo_name}', content, count=1)
-    actions_status_line = f'[![Actions Status](https://github.com/{os.getenv("GITHUB_REPOSITORY")}/workflows/CI/badge.svg)](https://github.com/{os.getenv("GITHUB_REPOSITORY")})'
+    # Update the GitHub Actions status badge
+    actions_status_line = f'[![Actions Status](https://github.com/{github_repository}/workflows/CI/badge.svg)](https://github.com/{github_repository})'
     return re.sub(r'\[!\[Actions Status\].*', actions_status_line, content)
 
 def update_cmake_content(content: str, repo_name: str) -> str:
@@ -29,8 +23,8 @@ def update_cmake_content(content: str, repo_name: str) -> str:
     content = re.sub(r'project\(([^ ]*)', f'project({repo_name}', content, count=1)
     return re.sub(r'([^ ]*\.tex)', f'{repo_name}.tex', content, count=1)
 
-def main():
-    repo_name = Path(os.getenv('GITHUB_REPOSITORY')).name
+def main(github_repository: str):
+    repo_name = Path(github_repository).name
     base_path = Path(__file__).parent
 
     check_tex_file_exists(repo_name, base_path)
@@ -38,13 +32,15 @@ def main():
     readme_path = base_path / 'README.md'
     cmake_path = base_path / 'CMakeLists.txt'
     
-    readme_content = read_file(readme_path)
-    updated_readme_content = update_readme_content(readme_content, repo_name)
-    write_file(readme_path, updated_readme_content)
+    # Read and update README.md content
+    readme_content = readme_path.read_text()
+    updated_readme_content = update_readme_content(readme_content, repo_name, github_repository)
+    readme_path.write_text(updated_readme_content)
     
-    cmake_content = read_file(cmake_path)
+    # Read and update CMakeLists.txt content
+    cmake_content = cmake_path.read_text()
     updated_cmake_content = update_cmake_content(cmake_content, repo_name)
-    write_file(cmake_path, updated_cmake_content)
+    cmake_path.write_text(updated_cmake_content)
 
 if __name__ == "__main__":
-    main()
+    main(os.getenv('GITHUB_REPOSITORY'))
