@@ -19,6 +19,11 @@ jobs:
       - name: Run update script
         run: python scripts/update_files.py
       
+      - name: Configure Git
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      
       - name: Commit changes to a new branch
         run: |
           git checkout -b changes/${{ github.run_id }}
