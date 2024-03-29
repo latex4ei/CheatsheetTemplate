@@ -12,9 +12,7 @@ def check_tex_file_exists(repo_name: str, base_path: Path):
 
 def update_readme_content(content: str, repo_name: str, github_repository: str) -> str:
     """Updates the README.md content."""
-    # Update the first line with the repository name
-    content = re.sub(r'^.*', f'# {repo_name}', content, count=1)
-    # Update the GitHub Actions status badge
+    content = re.sub(r'^# .+', f'# {repo_name}', content, count=1, flags=re.MULTILINE)
     actions_status_line = f'[![Actions Status](https://github.com/{github_repository}/workflows/CI/badge.svg)](https://github.com/{github_repository})'
     return re.sub(r'\[!\[Actions Status\].*', actions_status_line, content)
 
@@ -32,12 +30,10 @@ def main(github_repository: str):
     readme_path = base_path / 'README.md'
     cmake_path = base_path / 'CMakeLists.txt'
     
-    # Read and update README.md content
     readme_content = readme_path.read_text()
     updated_readme_content = update_readme_content(readme_content, repo_name, github_repository)
     readme_path.write_text(updated_readme_content)
     
-    # Read and update CMakeLists.txt content
     cmake_content = cmake_path.read_text()
     updated_cmake_content = update_cmake_content(cmake_content, repo_name)
     cmake_path.write_text(updated_cmake_content)
