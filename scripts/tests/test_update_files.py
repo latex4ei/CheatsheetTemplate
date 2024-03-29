@@ -46,7 +46,7 @@ def test_update_readme_content(fake_base_path, fs):
 def test_update_cmake_content(fake_base_path, fs):
     initial_cmake_content = (
         "cmake_minimum_required(VERSION 3.12)\n"
-        "project(WrongProjectName)\n"
+        "project(WrongProjectName NONE)\n"
         "# Add the main LaTeX document\n"
         "add_latex_document(\n"
         "CheatsheetTemplate.tex\n"
@@ -64,7 +64,7 @@ def test_update_cmake_content(fake_base_path, fs):
     # Verify
     expected_content = (
         "cmake_minimum_required(VERSION 3.12)\n"
-        "project(correct_title)\n"
+        "project(correct_title NONE)\n"
         "# Add the main LaTeX document\n"
         "add_latex_document(\n"
         "correct_title.tex\n"

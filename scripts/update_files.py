@@ -19,7 +19,7 @@ def update_readme_content(content: str, repo_name: str, github_repository: str) 
 def update_cmake_content(content: str, repo_name: str) -> str:
     """Updates the CMakeLists.txt content."""
     content = re.sub(r'project\(([^ ]*)', f'project({repo_name}', content, count=1)
-    return re.sub(r'([^ ]*\.tex)', f'{repo_name}.tex', content, count=1)
+    return re.sub(r'^(?!#).*?([^\s]*\.tex)', f'{repo_name}.tex', content, flags=re.MULTILINE, count=1)
 
 def main(github_repository: str):
     repo_name = Path(github_repository).name
