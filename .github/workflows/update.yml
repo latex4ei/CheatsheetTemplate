@@ -35,4 +35,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr create --base main --head changes/${{ github.run_id }} --title "Review automated updates" --body "Please review the changes applied by the automated script."
+          gh pr create --base main --head changes/${{ github.run_id }} --title "Specify project URLs and CMake project" --body "Please review the changes applied by the automated script."
