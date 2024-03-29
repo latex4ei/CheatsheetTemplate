@@ -1,5 +1,5 @@
 import pytest
-from update_files import check_tex_file_exists, update_readme_content, update_cmake_content
+from scripts.update_files import check_tex_file_exists, update_readme_content, update_cmake_content
 from pathlib import Path
 import os
 

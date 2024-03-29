@@ -112,3 +112,5 @@ sympy-plots-for-*.tex/
 # xindy
 *.xdy
 git.id
+*.DS_Store
+*.pyc
