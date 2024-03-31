@@ -33,7 +33,6 @@ def test_update_readme_content(fake_base_path, fs):
     
     updated_content = update_readme_content(initial_readme_content, repo_name, github_repository)
     
-    # Verify
     expected_content = (
         "# correct_title\n"
         "Some content in the README file.\n"
