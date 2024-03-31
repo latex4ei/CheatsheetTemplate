@@ -13,7 +13,7 @@ def fake_base_path(fs):
 
 def test_check_tex_file_exists(fake_base_path, fs):
     repo_name = "correct_title"
-    fs.create_file(f"{fake_base_path}/{repo_name}.tex")
+    fs.create_file(fake_base_path / f"{repo_name}.tex")
     check_tex_file_exists(repo_name, Path(fake_base_path))
     
     with pytest.raises(FileNotFoundError):
