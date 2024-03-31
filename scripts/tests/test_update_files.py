@@ -60,7 +60,6 @@ def test_update_cmake_content(fake_base_path, fs):
 
     updated_content = update_cmake_content(initial_cmake_content, repo_name)
     
-    # Verify
     expected_content = (
         "cmake_minimum_required(VERSION 3.12)\n"
         "project(correct_title NONE)\n"
