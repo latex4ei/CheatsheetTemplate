@@ -6,7 +6,7 @@ import os
 @pytest.fixture
 def fake_base_path(fs):
     """Fixture to create a base path and mock environment variable."""
-    base_path = "/test/project"
+    base_path = Path("/test/project")
     fs.create_dir(base_path)
     os.environ['GITHUB_REPOSITORY'] = 'user/correct_title'
     return base_path
