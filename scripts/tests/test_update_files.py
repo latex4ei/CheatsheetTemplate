@@ -27,7 +27,7 @@ def test_update_readme_content(fake_base_path, fs):
         "## Section\n"
         "More details here."
     )
-    fs.create_file(f"{fake_base_path}/README.md", contents=initial_readme_content)
+    fs.create_file(fake_base_path / "README.md", contents=initial_readme_content)
     repo_name = "correct_title"
     github_repository = 'user/correct_title'
     
