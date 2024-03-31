@@ -11,7 +11,7 @@ fi
 
 GITREV=$(git rev-list HEAD --count)
 echo "\\def\\GitRevision{$GITREV}"> git.id
-git show -s --format=%ci | xargs -I var_d $DATEBIN -d "var_d" +\\def\\GitNiceDate{%-d.\ %B\ %Y\ um\ %H:%M\ Uhr} >> git.id
+git show -s --format=%ci | xargs -I var_d $DATEBIN -d "var_d" +\\def\\GitNiceDate{%-d.\ %B\ %Y\} >> git.id
 
 # Get the repository's remote URL
 REPO_URL=$(git remote get-url origin)
