@@ -11,7 +11,7 @@ def fake_base_path(fs):
     os.environ['GITHUB_REPOSITORY'] = 'user/correct_title'
     return base_path
 
-def test_check_tex_file_exists(fake_base_path, fs):
+def test_check_tex_file_exists__file_does_not_exist__should_raise(fake_base_path, fs):
     repo_name = "correct_title"
     fs.create_file(fake_base_path / f"{repo_name}.tex")
     check_tex_file_exists(repo_name, fake_base_path)
