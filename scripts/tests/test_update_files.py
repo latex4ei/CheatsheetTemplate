@@ -55,7 +55,7 @@ def test_update_cmake_content(fake_base_path, fs):
         "DEPENDS writegitid\n"
         ")\n"
     )
-    fs.create_file(f"{fake_base_path}/CMakeLists.txt", contents=initial_cmake_content)
+    fs.create_file(fake_base_path / "CMakeLists.txt", contents=initial_cmake_content)
     repo_name = "correct_title"
 
     updated_content = update_cmake_content(initial_cmake_content, repo_name)
