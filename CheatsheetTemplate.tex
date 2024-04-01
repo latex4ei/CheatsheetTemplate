@@ -11,7 +11,7 @@
 % Document Settings
 % ======================================================================
 
-% possible options: color/nocolor, english/german, threecolumn
+% possible options: color/nocolor, english/ngerman, threecolumn
 % defaults: color, english
 \documentclass[english]{latex4ei/latex4ei_sheet}
 
@@ -29,6 +29,11 @@
 
 \IfFileExists{git.id}{\input{git.id}}{}
 \ifdefined\GitRevision\mydate{\GitNiceDate\ (git \GitRevision)}\fi
+\ifdefined\GitIssuesURL
+  \ifdefined\setissueslinkurl
+    \setissueslinkurl{\GitIssuesURL} % Set the actual URL
+  \fi
+\fi
 
 % Title
 % ----------------------------------------------------------------------

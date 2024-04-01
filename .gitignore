@@ -1,6 +1,6 @@
 build/
 
-CheatsheetTemplate.pdf
+/*.pdf
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
@@ -111,4 +111,6 @@ sympy-plots-for-*.tex/
 
 # xindy
 *.xdy
-StochastischeSignale.pdf
+git.id
+*.DS_Store
+*.pyc
