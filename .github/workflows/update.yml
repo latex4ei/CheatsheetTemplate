@@ -7,6 +7,10 @@ jobs:
   update-and-create-pr:
     runs-on: ubuntu-latest
 
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      DEFAULT_BRANCH: ""
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,7 +27,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      
+
+      - name: Get default branch
+        run: echo "DEFAULT_BRANCH=$(gh api repos/${{ github.repository }} --jq .default_branch)" >> $GITHUB_ENV
+
       - name: Commit changes to a new branch
         run: |
           git checkout -b changes/${{ github.run_id }}
@@ -32,7 +39,5 @@ jobs:
           git push -u origin changes/${{ github.run_id }}
       
       - name: Create Pull Request
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr create --base main --head changes/${{ github.run_id }} --title "Specify project URLs and CMake project" --body "Please review the changes applied by the automated script."
+          gh pr create --base $DEFAULT_BRANCH --head changes/${{ github.run_id }} --title "Specify project URLs and CMake project" --body "Please review the changes applied by the automated script."
