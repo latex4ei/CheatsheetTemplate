@@ -47,7 +47,21 @@ jobs:
         with:
           name: build-artifact
           path: ./build/*.pdf
-
+      - name: Comment on PR with artifact link
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr_number = context.payload.pull_request.number
+            const run_id = process.env.GITHUB_RUN_ID
+            const run_url = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${run_id}`
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr_number,
+              body: `:robot: The artifacts from this build are available [here](${run_url}).`
+            })
       - name: Prepare Deployment
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
         run: |
@@ -55,7 +69,6 @@ jobs:
           echo "# This branch is for deployment only" >> export/README.md
           cp build/*.pdf export
           cp build/git.id export
-          
       - name: Deploy
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@v4.5.0
