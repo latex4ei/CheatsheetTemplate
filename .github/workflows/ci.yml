@@ -55,6 +55,7 @@ jobs:
           echo "# This branch is for deployment only" >> export/README.md
           cp build/*.pdf export
           cp build/git.id export
+          
       - name: Deploy
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@v4.5.0
