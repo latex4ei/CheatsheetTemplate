@@ -2,9 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ master, main ]
   pull_request:
-    branches: [ master, main ]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -33,20 +31,63 @@ jobs:
           fetch-depth: 0
           
       - name: Configure Git safe directory with GITHUB_WORKSPACE
-        run: git config --global --add safe.directory $GITHUB_WORKSPACE
-        
-      - name: Build
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      
+      # Build documents via CMake
+      - name: Build documents
         run: |
-          cmake --version; pdflatex --version
+          cmake --version
+          pdflatex --version
+          
+          # Create and enter the build directory.
           mkdir -p build && cd build
           cmake ..
           make
+
+      # Prepare the "original" version from the default branch.
+      - name: Checkout default branch for diff
+        run: |
+          git fetch origin ${{ github.event.repository.default_branch }}
+          git worktree add original origin/${{ github.event.repository.default_branch }}
+
+      # Run latexdiff on each document.
+      - name: Run latexdiff on documents
+        run: |
+          # Install latexdiff if not present
+          apt-get install -y latexdiff
           
-      - name: Upload artifact
+          # Create a directory to hold diff outputs.
+          mkdir -p diff
+          
+          # Loop over each PDF in the build folder.
+          for pdf in build/*.pdf; do
+            # Extract the basename (e.g. "document" from "document.pdf")
+            filename=$(basename "$pdf" .pdf)
+            
+            if [ -f "$filename.tex" ] && [ -f original/"$filename.tex" ]; then
+              echo "Running latexdiff on $filename.tex"
+              # Generate a diff TeX file.
+              latexdiff original/"$filename.tex" "$filename.tex" > diff/"${filename}_diff.tex"
+              # Compile the diff file to produce a diff PDF.
+              pdflatex -output-directory=diff diff/"${filename}_diff.tex"
+            else
+              echo "Skipping $filename: Corresponding .tex file not found in one of the branches."
+            fi
+          done
+
+      # Upload the PDFs produced by build.
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: build-artifact
-          path: ./build/*.pdf
+          path: build/*.pdf
+
+      # Upload the diff PDFs produced by latexdiff.
+      - name: Upload latexdiff artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: latexdiff-artifact
+          path: diff/*.pdf
       - name: Comment on PR with artifact link
         if: ${{ github.event_name == 'pull_request' }}
         uses: actions/github-script@v6
