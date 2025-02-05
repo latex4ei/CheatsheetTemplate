@@ -88,8 +88,10 @@ jobs:
         with:
           name: latexdiff-artifact
           path: diff/*.pdf
+          
       - name: Comment on PR with artifact link
         if: ${{ github.event_name == 'pull_request' }}
+        continue-on-error: true
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
