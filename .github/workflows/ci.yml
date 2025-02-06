@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ master, main ]
+    branches: [main, master]
   pull_request:
-    branches: [ master, main ]
+    branches: [main, master]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -12,17 +12,17 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12.2'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r scripts/requirements.txt
-    - name: Run pytest
-      run: pytest
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12.2'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/requirements.txt
+      - name: Run pytest
+        run: pytest
 
   build:
     runs-on: ubuntu-latest
@@ -31,37 +31,71 @@ jobs:
       - uses: actions/checkout@v4
         with: 
           fetch-depth: 0
-          
+      
       - name: Configure Git safe directory with GITHUB_WORKSPACE
-        run: git config --global --add safe.directory $GITHUB_WORKSPACE
-        
-      - name: Build
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      
+      # Build documents via CMake
+      - name: Build documents
         run: |
-          cmake --version; pdflatex --version
+          cmake --version
+          pdflatex --version
           mkdir -p build && cd build
           cmake ..
           make
+
+      # Fetch default branch
+      - name: Fetch default branch
+        run: |
+          git fetch origin ${{ github.event.repository.default_branch }}
+
+      # Run latexdiff on each document by retrieving the original .tex file from the default branch.
+      - name: Run latexdiff on documents
+        run: |
+          # Install latexdiff if not present
+          apt-get install -y latexdiff
           
-      - name: Upload artifact
+          # Create a directory to hold diff outputs.
+          mkdir -p diff
+          mkdir -p temp
+
+          # Loop over each PDF in the build folder.
+          for pdf in build/*.pdf; do
+            # Extract the basename (e.g. "document" from "document.pdf")
+            filename=$(basename "$pdf" .pdf)
+            
+            if [ -f "$filename.tex" ]; then
+              # Check if the file exists in the default branch using git cat-file.
+              if git cat-file -e origin/${{ github.event.repository.default_branch }}:"$filename.tex" 2>/dev/null; then
+                echo "Running latexdiff on $filename.tex"
+                # Retrieve the file from the default branch directly into a temporary file.
+                git show origin/${{ github.event.repository.default_branch }}:"$filename.tex" > temp/"$filename"_old.tex
+                # Generate a diff TeX file using the original (default branch) and current file.
+                latexdiff temp/"$filename"_old.tex "$filename.tex" > diff/"${filename}_diff.tex"
+                # Compile the diff file to produce a diff PDF.
+                pdflatex -output-directory=diff diff/"${filename}_diff.tex"
+              else
+                echo "Skipping $filename: $filename.tex not found in the default branch."
+              fi
+            else
+              echo "Skipping $filename: $filename.tex not found in the current branch."
+            fi
+          done
+
+      # Upload the PDFs produced by build.
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifact
-          path: ./build/*.pdf
-      - name: Comment on PR with artifact link
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: actions/github-script@v6
+          name: build
+          path: build/*.pdf
+
+      # Upload the diff PDFs produced by latexdiff.
+      - name: Upload latexdiff artifact
+        uses: actions/upload-artifact@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const pr_number = context.payload.pull_request.number
-            const run_id = process.env.GITHUB_RUN_ID
-            const run_url = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${run_id}`
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: pr_number,
-              body: `:robot: The artifacts from this build are available [here](${run_url}).`
-            })
+          name: latexdiff
+          path: diff/*.pdf
+          
       - name: Prepare Deployment
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
         run: |
@@ -69,6 +103,7 @@ jobs:
           echo "# This branch is for deployment only" >> export/README.md
           cp build/*.pdf export
           cp build/git.id export
+          
       - name: Deploy
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@v4.5.0
